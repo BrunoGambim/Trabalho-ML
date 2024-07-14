@@ -2,6 +2,10 @@ import csv
 from os import listdir
 from os.path import isfile, join
 from datetime import datetime, timedelta
+import math
+import numpy as np
+import pandas as pd
+
 
 def parse_date(date_str):
     formats_to_try = ['%Y-%m-%d', '%Y/%m/%d']
@@ -128,109 +132,106 @@ for data in parsed_data_dict.values():
         if key != "meta":
             rainfall = 0.0
             pressure = 0.0
-            max_pressure = 0.0
-            min_pressure = 100000000.0
+            max_pressure = -math.inf
+            min_pressure = math.inf
             global_radiation = 0.0
             temperature = 0.0
             ponto_de_orvalho = 0.0
-            max_temperature = 0.0
-            min_temperature = 100000000.0
-            max_ponto_de_orvalho = 0.0
-            min_ponto_de_orvalho = 100000000.0
-            max_humidity = 0.0
-            min_humidity = 100000000.0
+            max_temperature = -math.inf
+            min_temperature = math.inf
+            max_ponto_de_orvalho = -math.inf
+            min_ponto_de_orvalho = math.inf
+            max_humidity = -math.inf
+            min_humidity = math.inf
             humidity = 0.0
             wind_dir = 0.0
-            wind_max = 0.0
+            wind_max = -math.inf
             wind_vel = 0.0
             next_day_rainfall = 0.0
 
-            err_rainfall = False
-            err_pressure = False
-            err_max_pressure = False
-            err_min_pressure = False
-            err_global_radiation = False
-            err_temperature = False
-            err_ponto_de_orvalho = False
-            err_max_temperature = False
-            err_min_temperature = False
-            err_max_ponto_de_orvalho = False
-            err_min_ponto_de_orvalho = False
-            err_max_humidity = False
-            err_min_humidity = False
-            err_humidity = False
-            err_wind_dir = False
-            err_wind_max = False
-            err_wind_vel = False
-            err_next_day_rainfall = 0.0
+            err_rainfall = 0
+            err_pressure = 0
+            err_max_pressure = 0
+            err_min_pressure = 0
+            err_global_radiation = 0
+            err_temperature = 0
+            err_ponto_de_orvalho = 0
+            err_max_temperature = 0
+            err_min_temperature = 0
+            err_max_ponto_de_orvalho = 0
+            err_min_ponto_de_orvalho = 0
+            err_max_humidity = 0
+            err_min_humidity = 0
+            err_humidity = 0
+            err_wind_dir = 0
+            err_wind_max = 0
+            err_wind_vel = 0
+            err_next_day_rainfall = 0
 
             for row in data[key]:
-                rainfall += 0 if row[RAINFALL] == '' else float(row[RAINFALL].replace(',','.'))
-                pressure +=  0 if row[PRESSURE] == '' else float(row[PRESSURE].replace(',','.'))
-                max_pressure = 0 if row[MAX_PRESSURE] == '' else max(max_pressure, float(row[MAX_PRESSURE].replace(',','.')))
-                min_pressure = 0 if row[MIN_PRESSURE] == '' else min(min_pressure, float(row[MIN_PRESSURE].replace(',','.')))
-                global_radiation += 0 if row[GLOBAL_RADIATION] == '' else float(row[GLOBAL_RADIATION].replace(',','.'))
-                temperature += 0 if row[TEMPERATURE] == '' else float(row[TEMPERATURE].replace(',','.'))
-                ponto_de_orvalho += 0 if row[PONTO_DE_ORVALHO] == '' else float(row[PONTO_DE_ORVALHO].replace(',','.'))
-                max_temperature = 0 if row[MAX_TEMPERATURE] == '' else max(max_temperature, float(row[MAX_TEMPERATURE].replace(',','.')))
-                min_temperature = 0 if row[MIN_TEMPERATURE] == '' else min(min_temperature, float(row[MIN_TEMPERATURE].replace(',','.')))
-                max_ponto_de_orvalho = 0 if row[MAX_PONTO_DE_ORVALHO] == '' else max(max_ponto_de_orvalho, float(row[MAX_PONTO_DE_ORVALHO].replace(',','.')))
-                min_ponto_de_orvalho = 0 if row[MIN_PONTO_DE_ORVALHO] == '' else min(min_ponto_de_orvalho, float(row[MIN_PONTO_DE_ORVALHO].replace(',','.')))
-                max_humidity = 0 if row[MAX_HUMIDITY] == '' else max(max_humidity, float(row[MAX_HUMIDITY].replace(',','.')))
-                min_humidity = 0 if row[MIN_HUMIDITY] == '' else min(min_humidity, float(row[MIN_HUMIDITY].replace(',','.')))
-                humidity += 0 if row[HUMIDITY] == '' else float(row[HUMIDITY].replace(',','.'))
-                wind_dir += 0 if row[WIND_DIR] == '' else float(row[WIND_DIR].replace(',','.'))
-                wind_max = 0 if row[WIND_MAX] == '' else max(wind_max, float(row[WIND_MAX].replace(',','.')))
-                wind_vel += 0 if row[WIND_VEL] == '' else float(row[WIND_VEL].replace(',','.'))
-                err_rainfall = err_rainfall or row[RAINFALL] == '' or row[RAINFALL] == '-9999'
-                err_pressure = err_pressure or row[PRESSURE] == '' or row[PRESSURE] == '-9999'
-                err_max_pressure = err_max_pressure or row[MAX_PRESSURE] == '' or row[MAX_PRESSURE] == '-9999'
-                err_min_pressure = err_min_pressure or row[MIN_PRESSURE] == '' or row[MIN_PRESSURE] == '-9999'
-                err_global_radiation = err_global_radiation or row[GLOBAL_RADIATION] == '' or row[GLOBAL_RADIATION] == '-9999'
-                err_temperature = err_temperature or row[TEMPERATURE] == '' or row[TEMPERATURE] == '-9999'
-                err_ponto_de_orvalho = err_ponto_de_orvalho or row[PONTO_DE_ORVALHO] == '' or row[PONTO_DE_ORVALHO] == '-9999'
-                err_max_temperature = err_max_temperature or row[MAX_TEMPERATURE] == '' or row[MAX_TEMPERATURE] == '-9999'
-                err_min_temperature = err_min_temperature or row[MIN_TEMPERATURE] == '' or row[MIN_TEMPERATURE] == '-9999'
-                err_max_ponto_de_orvalho = err_max_ponto_de_orvalho or row[MAX_PONTO_DE_ORVALHO] == '' or row[MAX_PONTO_DE_ORVALHO] == '-9999'
-                err_min_ponto_de_orvalho = err_min_ponto_de_orvalho or row[MIN_PONTO_DE_ORVALHO] == '' or row[MIN_PONTO_DE_ORVALHO] == '-9999'
-                err_max_humidity = err_max_humidity or row[MAX_HUMIDITY] == '' or row[MAX_HUMIDITY] == '-9999'
-                err_min_humidity = err_min_humidity or row[MIN_HUMIDITY] == '' or row[MIN_HUMIDITY] == '-9999'
-                err_humidity = err_humidity or row[HUMIDITY] == '' or row[HUMIDITY] == '-9999'
-                err_wind_dir = err_wind_dir or row[WIND_DIR] == '' or row[WIND_DIR] == '-9999'
-                err_wind_max = err_wind_max or row[WIND_MAX] == '' or row[WIND_MAX] == '-9999'
-                err_wind_vel = err_wind_vel or row[WIND_VEL] == '' or row[WIND_VEL] == '-9999'
+                rainfall += 0 if row[RAINFALL] == '' or row[RAINFALL] == '-9999' else float(row[RAINFALL].replace(',','.'))
+                pressure +=  0 if row[PRESSURE] == '' or row[PRESSURE] == '-9999' else float(row[PRESSURE].replace(',','.'))
+                max_pressure = max_pressure if row[MAX_PRESSURE] == '' or row[MAX_PRESSURE] == '-9999' else max(max_pressure, float(row[MAX_PRESSURE].replace(',','.')))
+                min_pressure = min_pressure if row[MIN_PRESSURE] == '' or row[MIN_PRESSURE] == '-9999' else min(min_pressure, float(row[MIN_PRESSURE].replace(',','.')))
+                global_radiation += 0 if row[GLOBAL_RADIATION] == '' or row[GLOBAL_RADIATION] == '-9999' else float(row[GLOBAL_RADIATION].replace(',','.'))
+                temperature += 0 if row[TEMPERATURE] == '' or row[TEMPERATURE] == '-9999' else float(row[TEMPERATURE].replace(',','.'))
+                ponto_de_orvalho += 0 if row[PONTO_DE_ORVALHO] == '' or row[PONTO_DE_ORVALHO] == '-9999' else float(row[PONTO_DE_ORVALHO].replace(',','.'))
+                max_temperature = max_temperature if row[MAX_TEMPERATURE] == '' or row[MAX_TEMPERATURE] == '-9999' else max(max_temperature, float(row[MAX_TEMPERATURE].replace(',','.')))
+                min_temperature = min_temperature if row[MIN_TEMPERATURE] == '' or row[MIN_TEMPERATURE] == '-9999' else min(min_temperature, float(row[MIN_TEMPERATURE].replace(',','.')))
+                max_ponto_de_orvalho = max_ponto_de_orvalho if row[MAX_PONTO_DE_ORVALHO] == '' or row[MAX_PONTO_DE_ORVALHO] == '-9999' else max(max_ponto_de_orvalho, float(row[MAX_PONTO_DE_ORVALHO].replace(',','.')))
+                min_ponto_de_orvalho = min_ponto_de_orvalho if row[MIN_PONTO_DE_ORVALHO] == '' or row[MIN_PONTO_DE_ORVALHO] == '-9999' else min(min_ponto_de_orvalho, float(row[MIN_PONTO_DE_ORVALHO].replace(',','.')))
+                max_humidity = max_humidity if row[MAX_HUMIDITY] == '' or row[MAX_HUMIDITY] == '-9999' else max(max_humidity, float(row[MAX_HUMIDITY].replace(',','.')))
+                min_humidity = min_humidity if row[MIN_HUMIDITY] == '' or row[MIN_HUMIDITY] == '-9999' else min(min_humidity, float(row[MIN_HUMIDITY].replace(',','.')))
+                humidity += 0 if row[HUMIDITY] == '' or row[HUMIDITY] == '-9999' else float(row[HUMIDITY].replace(',','.'))
+                wind_dir += 0 if row[WIND_DIR] == '' or row[WIND_DIR] == '-9999' else float(row[WIND_DIR].replace(',','.'))
+                wind_max = wind_max if row[WIND_MAX] == '' or row[WIND_MAX] == '-9999' else max(wind_max, float(row[WIND_MAX].replace(',','.')))
+                wind_vel += 0 if row[WIND_VEL] == '' or row[WIND_VEL] == '-9999' else float(row[WIND_VEL].replace(',','.'))
+
+                err_rainfall += 1 if row[RAINFALL] == '' or row[RAINFALL] == '-9999' else 0
+                err_pressure += 1 if row[PRESSURE] == '' or row[PRESSURE] == '-9999' else 0
+                err_max_pressure += 1 if row[MAX_PRESSURE] == '' or row[MAX_PRESSURE] == '-9999' else 0
+                err_min_pressure += 1 if row[MIN_PRESSURE] == '' or row[MIN_PRESSURE] == '-9999' else 0
+                err_global_radiation += 1 if row[GLOBAL_RADIATION] == '' or row[GLOBAL_RADIATION] == '-9999' else 0
+                err_temperature += 1 if row[TEMPERATURE] == '' or row[TEMPERATURE] == '-9999' else 0
+                err_ponto_de_orvalho += 1 if row[PONTO_DE_ORVALHO] == '' or row[PONTO_DE_ORVALHO] == '-9999' else 0
+                err_max_temperature += 1 if row[MAX_TEMPERATURE] == '' or row[MAX_TEMPERATURE] == '-9999' else 0
+                err_min_temperature += 1 if row[MIN_TEMPERATURE] == '' or row[MIN_TEMPERATURE] == '-9999' else 0
+                err_max_ponto_de_orvalho += 1 if row[MAX_PONTO_DE_ORVALHO] == '' or row[MAX_PONTO_DE_ORVALHO] == '-9999' else 0
+                err_min_ponto_de_orvalho += 1 if row[MIN_PONTO_DE_ORVALHO] == '' or row[MIN_PONTO_DE_ORVALHO] == '-9999' else 0
+                err_max_humidity += 1 if row[MAX_HUMIDITY] == '' or row[MAX_HUMIDITY] == '-9999' else 0
+                err_min_humidity += 1 if row[MIN_HUMIDITY] == '' or row[MIN_HUMIDITY] == '-9999' else 0
+                err_humidity += 1 if row[HUMIDITY] == '' or row[HUMIDITY] == '-9999' else 0
+                err_wind_dir += 1 if row[WIND_DIR] == '' or row[WIND_DIR] == '-9999' else 0
+                err_wind_max += 1 if row[WIND_MAX] == '' or row[WIND_MAX] == '-9999' else 0
+                err_wind_vel += 1 if row[WIND_VEL] == '' or row[WIND_VEL] == '-9999' else 0
 
             next_day = get_next_day(key)
             if data.get(next_day) == None:
-                continue
-
-            for row in data[next_day]:
-                next_day_rainfall += 0 if row[RAINFALL] == '' else float(row[RAINFALL].replace(',','.'))
-                err_next_day_rainfall = err_rainfall or row[RAINFALL] == '' or row[RAINFALL] == '-9999'
-            
-            if err_rainfall or err_pressure or err_max_pressure or err_min_pressure or err_temperature or err_ponto_de_orvalho or err_max_temperature or err_min_temperature or err_max_ponto_de_orvalho or err_min_ponto_de_orvalho or err_max_humidity or err_min_humidity or err_humidity or err_wind_dir or err_wind_max or err_wind_vel or err_next_day_rainfall:
-                continue
+                err_next_day_rainfall = 1
+            else:
+                for row in data[next_day]:
+                    next_day_rainfall += 0 if row[RAINFALL] == '' else float(row[RAINFALL].replace(',','.'))
+                    err_next_day_rainfall += 1 if  row[RAINFALL] == '' or row[RAINFALL] == '-9999' else 0          
 
             parsed_data.append({
-                "Precipitacao Total": rainfall if not err_rainfall else -9999,
-                #"next_day_rainfall": next_day_rainfall if not err_next_day_rainfall else -9999,
-                "Vai Chover Amanha": 'Sim' if next_day_rainfall >= 1 else 'Nao',
-                "Pressao Media": pressure / len(data[key]) if not err_pressure else -9999,
-                "Pressao Maxima": max_pressure if not err_max_pressure else -9999,
-                "Pressao Minima": min_pressure if not err_min_pressure else -9999,
-                #"avg_global_radiation": global_radiation / len(data[key]) if not err_global_radiation else -9999,
-                "Temperatura Media": temperature / len(data[key]) if not err_temperature else -9999,
-                "Temperatura Orvalho Media": ponto_de_orvalho / len(data[key]) if not err_ponto_de_orvalho else -9999,
-                "Temperatura Maxima": max_temperature if not err_max_temperature else -9999,
-                "Temperatura Minima": min_temperature if not err_min_temperature else -9999,
-                "Temperatura Orvalho Maxima": max_ponto_de_orvalho if not err_max_ponto_de_orvalho else -9999,
-                "Temperatura Orvalho Minima": min_ponto_de_orvalho if not err_min_ponto_de_orvalho else -9999,
-                "Umidade Maxima": max_humidity if not err_rainfall else -9999,
-                "Umidade Minima": min_humidity if not err_rainfall else -9999,
-                "Umidade Media": humidity / len(data[key]) if not err_humidity else -9999,
-                "Direcao Vento": wind_dir / len(data[key]) if not err_wind_dir else -9999,
-                "Rajada Maxima de Vento": wind_max if not err_wind_max else -9999,
-                "Vento Velocidade Media": wind_vel / len(data[key]) if not err_wind_vel else -9999,
+                "Precipitacao Total": rainfall if not err_rainfall > 0 else pd.NA,
+                "Vai Chover Amanha": ('Sim' if next_day_rainfall >= 1 else 'Nao') if not err_next_day_rainfall > 0 else pd.NA,
+                "Pressao Media": pd.NA if err_pressure == len(data[key]) else pressure / (len(data[key]) - err_pressure),
+                "Pressao Maxima": max_pressure if (len(data[key]) - err_max_pressure) != 0 else pd.NA,
+                "Pressao Minima": min_pressure if (len(data[key]) - err_min_pressure) != 0 else pd.NA,
+                "Radiacao Global": pd.NA if err_global_radiation == len(data[key]) else global_radiation / (len(data[key]) - err_global_radiation),
+                "Temperatura Media": pd.NA if err_temperature == len(data[key]) else temperature / (len(data[key]) - err_temperature),
+                "Temperatura Orvalho Media": pd.NA if err_ponto_de_orvalho == len(data[key]) else ponto_de_orvalho / (len(data[key]) - err_ponto_de_orvalho),
+                "Temperatura Maxima": max_temperature if (len(data[key]) - err_max_temperature) != 0 else pd.NA,
+                "Temperatura Minima": min_temperature if (len(data[key]) - err_min_temperature) != 0 else pd.NA,
+                "Temperatura Orvalho Maxima": max_ponto_de_orvalho if (len(data[key]) - err_max_ponto_de_orvalho) != 0 else pd.NA,
+                "Temperatura Orvalho Minima": min_ponto_de_orvalho if (len(data[key]) - err_min_ponto_de_orvalho) != 0 else pd.NA,
+                "Umidade Maxima": max_humidity if (len(data[key]) - err_max_humidity) != 0 else pd.NA,
+                "Umidade Minima": min_humidity if (len(data[key]) - err_min_humidity) != 0 else pd.NA,
+                "Umidade Media": pd.NA if err_humidity == len(data[key]) else humidity / (len(data[key]) - err_humidity),
+                "Direcao Vento": pd.NA if err_wind_dir == len(data[key]) else wind_dir / (len(data[key]) - err_wind_dir),
+                "Rajada Maxima de Vento": wind_max if (len(data[key]) - err_wind_max) != 0 else pd.NA,
+                "Vento Velocidade Media": pd.NA if err_wind_vel == len(data[key]) else wind_vel / (len(data[key]) - err_wind_vel),
                 "Cidade": data["meta"]["city"],
                 "Codigo": data["meta"]["cod"],
                 "Latitude": data["meta"]["lat"],
