@@ -210,12 +210,12 @@ for data in parsed_data_dict.values():
                 err_next_day_rainfall = 1
             else:
                 for row in data[next_day]:
-                    next_day_rainfall += 0 if row[RAINFALL] == '' else float(row[RAINFALL].replace(',','.'))
+                    next_day_rainfall += 0 if row[RAINFALL] == '' or row[RAINFALL] == '-9999' else float(row[RAINFALL].replace(',','.'))
                     err_next_day_rainfall += 1 if  row[RAINFALL] == '' or row[RAINFALL] == '-9999' else 0          
 
             parsed_data.append({
-                "Precipitacao Total": rainfall if not err_rainfall > 0 else pd.NA,
-                "Vai Chover Amanha": ('Sim' if next_day_rainfall >= 1 else 'Nao') if not err_next_day_rainfall > 0 else pd.NA,
+                "Precipitacao Total": pd.NA if err_rainfall == len(data[key]) else rainfall,
+                "Vai Chover Amanha":  pd.NA if err_next_day_rainfall == len(data[key]) else ('Sim' if next_day_rainfall >= 1 else 'Nao'),
                 "Pressao Media": pd.NA if err_pressure == len(data[key]) else pressure / (len(data[key]) - err_pressure),
                 "Pressao Maxima": max_pressure if (len(data[key]) - err_max_pressure) != 0 else pd.NA,
                 "Pressao Minima": min_pressure if (len(data[key]) - err_min_pressure) != 0 else pd.NA,
