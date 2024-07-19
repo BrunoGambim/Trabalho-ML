@@ -56,7 +56,7 @@ LAT = 4
 LONG = 5
 
 data_dict = {}
-for year in range(2001, 2024):
+for year in range(2001, 2025):
    file_names = [f for f in listdir(str(year)) if isfile(join(str(year), f)) and f.endswith(".CSV")]
    for file_name in file_names:
         with open(str(year) + '/' + file_name) as csvfile:
