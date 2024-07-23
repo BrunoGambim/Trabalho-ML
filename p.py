@@ -108,19 +108,26 @@ for data in data_dict.values():
                 if row_key < 23 and data[key].get(row_key+1) != None:
                     next_row = data[key][row_key+1]
                     new_row = data[key][row_key].copy()
-                    new_row[MAX_PRESSURE] = new_row[MAX_PRESSURE]
-                    new_row[MIN_PRESSURE] = new_row[MIN_PRESSURE]
-                    new_row[MAX_HUMIDITY] = new_row[MAX_HUMIDITY]
-                    new_row[MIN_HUMIDITY] = new_row[MIN_HUMIDITY]
-                    new_row[MAX_TEMPERATURE] = new_row[MAX_TEMPERATURE]
-                    new_row[MIN_TEMPERATURE] = new_row[MIN_TEMPERATURE]
-                    new_row[MAX_PONTO_DE_ORVALHO] = new_row[MAX_PONTO_DE_ORVALHO]
-                    new_row[MAX_PONTO_DE_ORVALHO] = new_row[MAX_PONTO_DE_ORVALHO]
+                    new_row[MAX_PRESSURE] = next_row[MAX_PRESSURE]
+                    new_row[MIN_PRESSURE] = next_row[MIN_PRESSURE]
+                    new_row[MAX_HUMIDITY] = next_row[MAX_HUMIDITY]
+                    new_row[MIN_HUMIDITY] = next_row[MIN_HUMIDITY]
+                    new_row[MAX_TEMPERATURE] = next_row[MAX_TEMPERATURE]
+                    new_row[MIN_TEMPERATURE] = next_row[MIN_TEMPERATURE]
+                    new_row[MIN_PONTO_DE_ORVALHO] = next_row[MIN_PONTO_DE_ORVALHO]
+                    new_row[MAX_PONTO_DE_ORVALHO] = next_row[MAX_PONTO_DE_ORVALHO]
                     parsed_data[key].append(new_row)
                 elif row_key == 23 and data.get(next_day) != None and data[next_day].get(0) != None:
                     next_row = data[next_day][0]
                     new_row = data[key][row_key].copy()
-
+                    new_row[MAX_PRESSURE] = next_row[MAX_PRESSURE]
+                    new_row[MIN_PRESSURE] = next_row[MIN_PRESSURE]
+                    new_row[MAX_HUMIDITY] = next_row[MAX_HUMIDITY]
+                    new_row[MIN_HUMIDITY] = next_row[MIN_HUMIDITY]
+                    new_row[MAX_TEMPERATURE] = next_row[MAX_TEMPERATURE]
+                    new_row[MIN_TEMPERATURE] = next_row[MIN_TEMPERATURE]
+                    new_row[MIN_PONTO_DE_ORVALHO] = next_row[MIN_PONTO_DE_ORVALHO]
+                    new_row[MAX_PONTO_DE_ORVALHO] = next_row[MAX_PONTO_DE_ORVALHO]
                     parsed_data[key].append(new_row)
     parsed_data_dict[parsed_data["meta"]["cod"]] = parsed_data
 
@@ -148,6 +155,21 @@ for data in parsed_data_dict.values():
             wind_max = -math.inf
             wind_vel = 0.0
             next_day_rainfall = 0.0
+            
+            wind_dir_0 = pd.NA
+            wind_dir_4 = pd.NA
+            wind_dir_12 = pd.NA
+            wind_dir_18 = pd.NA
+
+            wind_max_0 = pd.NA
+            wind_max_6 = pd.NA
+            wind_max_12 = pd.NA
+            wind_max_18 = pd.NA
+
+            wind_vel_0 = pd.NA
+            wind_vel_6 = pd.NA
+            wind_vel_12 = pd.NA
+            wind_vel_18 = pd.NA
 
             err_rainfall = 0
             err_pressure = 0
@@ -205,6 +227,23 @@ for data in parsed_data_dict.values():
                 err_wind_max += 1 if row[WIND_MAX] == '' or row[WIND_MAX] == '-9999' else 0
                 err_wind_vel += 1 if row[WIND_VEL] == '' or row[WIND_VEL] == '-9999' else 0
 
+                if row[HOUR] == 0:
+                    wind_dir_0 = float(row[WIND_DIR].replace(',','.')) if row[WIND_DIR] != '' and row[WIND_DIR] != '-9999' else pd.NA
+                    wind_max_0 = float(row[WIND_MAX].replace(',','.')) if row[WIND_MAX] != '' and row[WIND_MAX] != '-9999' else pd.NA
+                    wind_vel_0 = float(row[WIND_VEL].replace(',','.')) if row[WIND_VEL] != '' and row[WIND_VEL] != '-9999' else pd.NA
+                elif row[HOUR] == 6:
+                    wind_dir_6 = float(row[WIND_DIR].replace(',','.')) if row[WIND_DIR] != '' and row[WIND_DIR] != '-9999' else pd.NA
+                    wind_max_6 = float(row[WIND_MAX].replace(',','.')) if row[WIND_MAX] != '' and row[WIND_MAX] != '-9999' else pd.NA
+                    wind_vel_6 = float(row[WIND_VEL].replace(',','.')) if row[WIND_VEL] != '' and row[WIND_VEL] != '-9999' else pd.NA
+                elif row[HOUR] == 12:
+                    wind_dir_12 = float(row[WIND_DIR].replace(',','.')) if row[WIND_DIR] != '' and row[WIND_DIR] != '-9999' else pd.NA
+                    wind_max_12 = float(row[WIND_MAX].replace(',','.')) if row[WIND_MAX] != '' and row[WIND_MAX] != '-9999' else pd.NA
+                    wind_vel_12 = float(row[WIND_VEL].replace(',','.')) if row[WIND_VEL] != '' and row[WIND_VEL] != '-9999' else pd.NA
+                elif row[HOUR] == 18:
+                    wind_dir_18 = float(row[WIND_DIR].replace(',','.')) if row[WIND_DIR] != '' and row[WIND_DIR] != '-9999' else pd.NA
+                    wind_max_18 = float(row[WIND_MAX].replace(',','.')) if row[WIND_MAX] != '' and row[WIND_MAX] != '-9999' else pd.NA
+                    wind_vel_18 = float(row[WIND_VEL].replace(',','.')) if row[WIND_VEL] != '' and row[WIND_VEL] != '-9999' else pd.NA
+
             next_day = get_next_day(key)
             if data.get(next_day) == None:
                 err_next_day_rainfall = 1
@@ -229,14 +268,26 @@ for data in parsed_data_dict.values():
                 "Umidade Maxima": max_humidity if (len(data[key]) - err_max_humidity) != 0 else pd.NA,
                 "Umidade Minima": min_humidity if (len(data[key]) - err_min_humidity) != 0 else pd.NA,
                 "Umidade Media": pd.NA if err_humidity == len(data[key]) else humidity / (len(data[key]) - err_humidity),
-                "Direcao Vento": pd.NA if err_wind_dir == len(data[key]) else wind_dir / (len(data[key]) - err_wind_dir),
-                "Rajada Maxima de Vento": wind_max if (len(data[key]) - err_wind_max) != 0 else pd.NA,
-                "Vento Velocidade Media": pd.NA if err_wind_vel == len(data[key]) else wind_vel / (len(data[key]) - err_wind_vel),
+                #"Direcao Vento": pd.NA if err_wind_dir == len(data[key]) else wind_dir / (len(data[key]) - err_wind_dir),
+                #"Rajada Maxima de Vento": wind_max if (len(data[key]) - err_wind_max) != 0 else pd.NA,
+                #"Vento Velocidade Media": pd.NA if err_wind_vel == len(data[key]) else wind_vel / (len(data[key]) - err_wind_vel),
                 "Cidade": data["meta"]["city"],
                 "Codigo": data["meta"]["cod"],
                 "Latitude": data["meta"]["lat"],
                 "Longitude": data["meta"]["long"],
                 "Data": parse_date(key),
+                "Direcao Vento 0H": wind_dir_0,
+                "Direcao Vento 6H": wind_dir_6,
+                "Direcao Vento 12H": wind_dir_12,
+                "Direcao Vento 18H": wind_dir_18,
+                "Rajada Maxima de Vento 0H": wind_max_0,
+                "Rajada Maxima de Vento 6H": wind_max_6,
+                "Rajada Maxima de Vento 12H": wind_max_12,
+                "Rajada Maxima de Vento 18H": wind_max_18,
+                "Vento Velocidade Media 0H": wind_vel_0,
+                "Vento Velocidade Media 6H": wind_vel_6,
+                "Vento Velocidade Media 12H": wind_vel_12,
+                "Vento Velocidade Media 18H": wind_vel_18,
             })
     
 with open('data.csv', 'w', newline='') as file:
