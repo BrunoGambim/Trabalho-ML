@@ -29,7 +29,6 @@ def parse_hour(hour_str):
     hours = hour_str[:2]
     return int(hours)
     
-
 DATE = 0
 HOUR = 1
 RAINFALL = 2
