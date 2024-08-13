@@ -53,6 +53,7 @@ CITY = 2
 COD = 3
 LAT = 4
 LONG = 5
+ALT = 6
 
 data_dict = {}
 for year in range(2001, 2025):
@@ -65,6 +66,7 @@ for year in range(2001, 2025):
             cod = ""
             lat = ""
             long = ""
+            alt = ""
 
             counter = 0
             for row in reader:
@@ -77,6 +79,8 @@ for year in range(2001, 2025):
                         lat = row[1].replace(',','.')
                     elif counter == LONG:
                         long = row[1].replace(',','.')
+                    elif counter == ALT:
+                        alt = row[1].replace(',','.')
                     counter += 1
                 else:
                     break
@@ -90,7 +94,7 @@ for year in range(2001, 2025):
                     data[row[DATE]] = {}
                 row[HOUR] = parse_hour(row[HOUR])
                 data[row[DATE]][row[HOUR]] = row
-            data["meta"] = {"city": city, "cod": cod, "lat": lat, "long": long}
+            data["meta"] = {"city": city, "cod": cod, "lat": lat, "long": long, "alt": alt}
             data_dict[cod] = data
 
             csvfile.close()
@@ -274,6 +278,7 @@ for data in parsed_data_dict.values():
                 "Codigo": data["meta"]["cod"],
                 "Latitude": data["meta"]["lat"],
                 "Longitude": data["meta"]["long"],
+                "Altitude": data["meta"]["alt"],
                 "Data": parse_date(key),
                 "Direcao Vento 0H": wind_dir_0,
                 "Direcao Vento 6H": wind_dir_6,
